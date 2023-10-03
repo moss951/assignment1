@@ -1,8 +1,8 @@
-import data.game as game
+import game as game
 
 game.introduceQuest()
-game.assignRole(game.getResponse('Select animal (dog/cat): ', game.ROLES_LIST))
+game.assignPlayerRole(game.getResponse('Select animal (DOG/CAT): ', game.ROLES_LIST))
 game.printQuestInfo()
 
-while (not game.inBattle and game.stepsTaken < game.MAX_STEPS):
+while (game.stepsTaken < game.MAX_STEPS):
     game.takeStep()
