@@ -114,7 +114,7 @@ def getDiceMoveStrengthOffset(roll):
 def takeStep():
     global stepsTaken, currentLocationIndex
 
-    print('You have taken', stepsTaken, '/', MAX_STEPS, 'steps.')
+    print('You have taken', stepsTaken, '/', MAX_STEPS, 'steps.\n')
 
     rollNumber = rollDice()
 
@@ -138,7 +138,7 @@ def onBattle():
     global currentEnemy, inBattle, playerTurn, playerHealthPoints
 
     inBattle = True
-    print('You rolled a 1 or 2. You are now in battle.\n')
+    print('Your roll is WEAK. You are now in battle.\n')
 
     currentEnemy = ENEMIES_LIST[currentLocationIndex]
     assignEnemyRole(currentEnemy)
@@ -160,7 +160,11 @@ def onBattle():
         else:
             enemyAttack()
 
-        inBattle = not isEnemyDead()
+        if isPlayerDead() or isEnemyDead():
+            inBattle = False
+
+        if isPlayerDead():
+            onLose()
 
     playerHealthPoints = generateHealthPoints(playerHealth)
     print('You are no longer in battle.\n')
@@ -178,9 +182,13 @@ def playerAttack():
     
     rollNumber = rollDice()
 
-    finalAttackDamage = playerAttackDamage + getDiceMoveStrengthOffset(rollNumber)
-    enemyHealthPoints -= finalAttackDamage
-    print(currentEnemy + ' has lost', finalAttackDamage, 'health points.\n')
+    offsetAttackDamage = playerAttackDamage + getDiceMoveStrengthOffset(rollNumber)
+
+    if offsetAttackDamage <= 0:
+        offsetAttackDamage = 1
+
+    enemyHealthPoints -= offsetAttackDamage
+    print(currentEnemy + ' has lost', offsetAttackDamage, 'health points.\n')
 
 def playerHeal():
     global playerHealthPoints
@@ -192,6 +200,9 @@ def playerHeal():
 
         if playerHealthPoints + healAmount > generateHealthPoints(playerHealth):
             healAmount = generateHealthPoints(playerHealth) - playerHealthPoints
+
+        if healAmount <= 0:
+            healAmount = 1
         
         playerHealthPoints += healAmount
         print('You gained', healAmount, 'health points.\n')
@@ -229,9 +240,22 @@ def isEnemyDead():
     
     return False
 
+def isPlayerDead():
+    if playerHealthPoints <= 0:
+        return True
+    
+    return False
+
+def onLose():
+    print('You ran out of health points! Game over.')
+    quitPrompt()
+
 def onWin():
     print('You have arrived at your home! Congratulations!')
-    input('Press any key to quit: ')
+    quitPrompt()
+
+def quitPrompt():
+    input('Press enter to quit: ')
     quit()
 
 DICE_MIN = 1
