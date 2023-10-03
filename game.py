@@ -11,7 +11,20 @@ def introduceQuest():
 
 def printQuestInfo():
     print('The route back home is: ' + generateRouteString() + '. You are in the ' + getLocation(currentLocationIndex) + ' right now.')
-    print('To get to your next location, take', MAX_STEPS, 'steps. You may encounter predators along the way.\n')
+    print('To get to your next location, take', MAX_STEPS, 'steps. You may encounter enemies along the way.\n')
+
+def printInstructions():
+    print('INSTRUCTIONS\n')
+    print('You can choose between two roles. The roles have different strengths and weaknesses in HEALTH, SPEED and STRENGTH.')
+    print('There are three areas you must travel in (or \'challenges\').')
+    print('For each step you take, you roll a die. There is a chance you will encounter an enemy, if your roll is WEAK (1 - 3).')
+    print('Each area has its own enemy. The enemies\' attributes get increasingly stronger as you progress.')
+    print('The first player to move in battle is decided by whoever has the greatest SPEED attribute.')
+    print('There are three moves you can perform during battle: ATTACK, HEAL and RUN.')
+    print('Attack damage and the amount healed can either be boosted, hindered, or left unchanged, determined by the strength of a die roll.')
+    print('Running away will only succeed if your die roll is STRONG (8 - 10).')
+    print('Enemies have a chance to miss their attacks.')
+    print('Your health is reset after every battle.\n')
 
 def getLocation(index):
     return LOCATIONS_LIST[index]
@@ -120,16 +133,16 @@ def takeStep():
 
     if getRollStrength(rollNumber) == 'WEAK':
         onBattle()
-    else:
-        stepsTaken += 1
 
-        print('You took a step safely.\n')
+    stepsTaken += 1
+    print('You took a step safely.\n')
 
     if stepsTaken == MAX_STEPS:
         stepsTaken = 0
         currentLocationIndex += 1
 
         print('You have left the ' + getLocation(currentLocationIndex - 1) + ' and entered the ' + getLocation(currentLocationIndex) + '!\n')
+        printQuestInfo()
 
         if getLocation(currentLocationIndex) == LOCATIONS_LIST[len(LOCATIONS_LIST) - 1]:
             onWin()
@@ -224,9 +237,14 @@ def playerRun():
 def enemyAttack():
     global playerHealthPoints
 
-    playerHealthPoints -= enemyAttackDamage
-    print(currentEnemy + ' attacked!')
-    print('You lost', enemyAttackDamage, 'health points.\n')
+    attackAccuracy = random.randrange(0, 4)
+
+    if attackAccuracy != 0:
+        playerHealthPoints -= enemyAttackDamage
+        print(currentEnemy + ' attacked!')
+        print('You lost', enemyAttackDamage, 'health points.\n')
+    else:
+        print(currentEnemy + ' tried to attack, but missed!\n')
 
 def isPlayerFaster():
     if playerSpeed > enemySpeed:
