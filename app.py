@@ -6,5 +6,3 @@ game.printQuestInfo()
 
 while (not game.inBattle and game.stepsTaken < game.MAX_STEPS):
     game.takeStep()
-
-print('next location')

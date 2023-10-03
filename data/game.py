@@ -64,7 +64,7 @@ def rollDice():
     return rollNumber
 
 def takeStep():
-    global fighting, stepsTaken
+    global fighting, stepsTaken, currentLocationIndex
 
     print('You have taken', stepsTaken, '/', MAX_STEPS, 'steps.')
 
@@ -73,7 +73,17 @@ def takeStep():
         onBattle()
     else:
         stepsTaken += 1
+
         print('You took a step safely.\n')
+
+    if stepsTaken == MAX_STEPS:
+        stepsTaken = 0
+        currentLocationIndex += 1
+
+        print('You have left the ' + getLocation(currentLocationIndex - 1) + ' and entered the ' + getLocation(currentLocationIndex) + '!\n')
+
+        if getLocation(currentLocationIndex) == LOCATIONS_LIST[len(LOCATIONS_LIST) - 1]:
+            onWin()
 
 def onBattle():
     global inBattle
@@ -82,6 +92,11 @@ def onBattle():
     inBattle = False
 
     print('You are no longer in battle.\n')
+
+def onWin():
+    print('You have arrived at your home! Congratulations!')
+    input('Press any key to quit: ')
+    quit()
 
 DICE_MIN = 1
 DICE_MAX = 10
