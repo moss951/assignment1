@@ -40,13 +40,6 @@ def generateRouteString():
 
     return routeString
 
-def isValidResponse(response, options):
-    for i in options:
-        if response.upper() == i:
-            return True
-    
-    return False
-
 def getResponse(message, options):
     global currentInput
 
@@ -57,6 +50,13 @@ def getResponse(message, options):
             return currentInput.upper()
     
         print('Invalid response.\n')
+
+def isValidResponse(response, options):
+    for i in options:
+        if response.upper() == i:
+            return True
+    
+    return False
 
 def rollDice():
     input('Roll Dice (press enter to continue): ')
@@ -113,16 +113,27 @@ def assignEnemyRole(role):
     enemyAttackDamage = getAttackDamage(enemyStrength)
 
 def generateHealthPoints(health):
-    return (health + 3) * 5
+    OFFSET = 3
+    MULTIPLIER = 5
+
+    return (health + OFFSET) * MULTIPLIER
 
 def getHealIncrement(health):
-    return (health + 3) * 2
+    OFFSET = 3
+    MULTIPLIER = 2
+
+    return (health + OFFSET) * MULTIPLIER
 
 def getAttackDamage(strength):
-    return (strength + 3) * 2
+    OFFSET = 3
+    OFFSET = 2
+
+    return (strength + OFFSET) * OFFSET
 
 def getDiceMoveStrengthOffset(roll):
-    return roll - 5
+    OFFSET = -5
+
+    return roll + OFFSET
 
 def takeStep():
     global stepsTaken, currentLocationIndex
@@ -134,6 +145,9 @@ def takeStep():
     if getRollStrength(rollNumber) == 'WEAK':
         onBattle()
 
+        if gameDone:
+            return
+
     stepsTaken += 1
     print('You took a step safely.\n')
 
@@ -142,10 +156,11 @@ def takeStep():
         currentLocationIndex += 1
 
         print('You have left the ' + getLocation(currentLocationIndex - 1) + ' and entered the ' + getLocation(currentLocationIndex) + '!\n')
-        printQuestInfo()
 
         if getLocation(currentLocationIndex) == LOCATIONS_LIST[len(LOCATIONS_LIST) - 1]:
             onWin()
+        else:
+            printQuestInfo()
 
 def onBattle():
     global currentEnemy, inBattle, playerTurn, playerHealthPoints
@@ -265,16 +280,16 @@ def isPlayerDead():
     return False
 
 def onLose():
+    global gameDone
+    
+    gameDone = True
     print('You ran out of health points! Game over.')
-    quitPrompt()
 
 def onWin():
-    print('You have arrived at your home! Congratulations!')
-    quitPrompt()
+    global gameDone
 
-def quitPrompt():
-    input('Press enter to quit: ')
-    quit()
+    gameDone = True
+    print('You have arrived at your home! Congratulations!')
 
 DICE_MIN = 1
 DICE_MAX = 10
@@ -307,3 +322,4 @@ currentLocationIndex = 0
 stepsTaken = 0
 inBattle = False
 playerTurn = False
+gameDone = False
