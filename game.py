@@ -40,17 +40,26 @@ def getResponse(message, options):
     while (True):
         currentInput = input(message)
         if isValidResponse(currentInput, options):
-            print('\n')
+            print('')
             return currentInput.upper()
     
         print('Invalid response.\n')
 
 def rollDice():
-    input('Roll Dice (press any key to continue): ')
+    input('Roll Dice (press enter to continue): ')
     rollNumber = random.randrange(DICE_MIN, DICE_MAX + 1)
 
-    print('Number rolled:', rollNumber, '\n')
+    print('Number rolled:', rollNumber)
+    print(getRollStrength(rollNumber) + '\n')
     return rollNumber
+
+def getRollStrength(roll):
+    if roll < 4:
+        return 'WEAK'
+    elif roll > 3 and roll < 8:
+        return 'AVERAGE'
+    elif roll > 7:
+        return 'STRONG'
 
 def assignPlayerRole(role):
     global playerRole, playerHealth, playerSpeed, playerStrength, playerHealthPoints, playerAttackDamage
@@ -93,15 +102,23 @@ def assignEnemyRole(role):
 def generateHealthPoints(health):
     return (health + 3) * 5
 
+def getHealIncrement(health):
+    return (health + 3) * 2
+
 def getAttackDamage(strength):
     return (strength + 3) * 2
+
+def getDiceMoveStrengthOffset(roll):
+    return roll - 5
 
 def takeStep():
     global stepsTaken, currentLocationIndex
 
     print('You have taken', stepsTaken, '/', MAX_STEPS, 'steps.')
 
-    if rollDice() == 1:
+    rollNumber = rollDice()
+
+    if getRollStrength(rollNumber) == 'WEAK':
         onBattle()
     else:
         stepsTaken += 1
@@ -118,10 +135,10 @@ def takeStep():
             onWin()
 
 def onBattle():
-    global currentEnemy, inBattle, playerTurn, playerHealth
+    global currentEnemy, inBattle, playerTurn, playerHealthPoints
 
     inBattle = True
-    print('You rolled a 1. You are now in battle.\n')
+    print('You rolled a 1 or 2. You are now in battle.\n')
 
     currentEnemy = ENEMIES_LIST[currentLocationIndex]
     assignEnemyRole(currentEnemy)
@@ -135,19 +152,18 @@ def onBattle():
     while (inBattle):
         playerTurn = not playerTurn
 
+        print('Player health:', playerHealthPoints)
+        print('Enemy health:', enemyHealthPoints, '\n')
+
         if (playerTurn):
             makeBattleMove(getResponse('What would you like to do (ATTACK/HEAL/RUN)? ', BATTLE_MOVES_LIST))
         else:
             enemyAttack()
 
-    playerHealth = generateHealthPoints(playerHealth)
-    print('You are no longer in battle.\n')
+        inBattle = not isEnemyDead()
 
-def isPlayerFaster():
-    if playerSpeed > enemySpeed:
-        return True
-    
-    return False
+    playerHealthPoints = generateHealthPoints(playerHealth)
+    print('You are no longer in battle.\n')
 
 def makeBattleMove(move):
     if move == 'ATTACK':
@@ -160,22 +176,37 @@ def makeBattleMove(move):
 def playerAttack():
     global enemyHealthPoints, currentEnemy
     
-    enemyHealthPoints -= playerAttackDamage
-    print(currentEnemy + ' has lost', playerAttackDamage, 'health points.\n')
+    rollNumber = rollDice()
+
+    finalAttackDamage = playerAttackDamage + getDiceMoveStrengthOffset(rollNumber)
+    enemyHealthPoints -= finalAttackDamage
+    print(currentEnemy + ' has lost', finalAttackDamage, 'health points.\n')
 
 def playerHeal():
     global playerHealthPoints
 
-    healAmount = (playerHealth + 3) * 2
-    playerHealthPoints += healAmount
-    print('You gained', healAmount, 'health points.\n')
+    rollNumber = rollDice()
+
+    if playerHealthPoints < generateHealthPoints(playerHealth):
+        healAmount = getHealIncrement(playerHealth) + getDiceMoveStrengthOffset(rollNumber)
+
+        if playerHealthPoints + healAmount > generateHealthPoints(playerHealth):
+            healAmount = generateHealthPoints(playerHealth) - playerHealthPoints
+        
+        playerHealthPoints += healAmount
+        print('You gained', healAmount, 'health points.\n')
+    else:
+        print('You are at maximum health.')
 
 def playerRun():
     global inBattle, currentEnemy
 
-    if isPlayerFaster:
+    rollNumber = rollDice()
+
+    if getRollStrength(rollNumber) == 'STRONG':
         inBattle = False
         print('You successfully ran away from the ' + currentEnemy + '.\n')
+        return
 
     print('You cannot run away from the ' + currentEnemy + '.\n')
 
@@ -183,7 +214,20 @@ def enemyAttack():
     global playerHealthPoints
 
     playerHealthPoints -= enemyAttackDamage
+    print(currentEnemy + ' attacked!')
     print('You lost', enemyAttackDamage, 'health points.\n')
+
+def isPlayerFaster():
+    if playerSpeed > enemySpeed:
+        return True
+    
+    return False
+
+def isEnemyDead():
+    if enemyHealthPoints <= 0:
+        return True
+    
+    return False
 
 def onWin():
     print('You have arrived at your home! Congratulations!')
