@@ -1,3 +1,5 @@
+# IMPORTS
+
 import random
 
 import data.dog as dog
@@ -5,12 +7,17 @@ import data.cat as cat
 import data.beaver as beaver
 import data.fox as fox
 import data.wolf as wolf
+import data.mouse as mouse
+import data.spider as spider
+import data.scorpion as scorpion
+
+# PRINT INFORMATION
 
 def introduceQuest():
-    print('You are an animal who is lost in the ' + getLocation(currentLocationIndex) + '. Your home is at the ' + getLocation(len(LOCATIONS_LIST) - 1) + '. You need to get back home.\n')
+    print('You are an animal who is lost in the ' + getLocation(currentLocationIndex, playerRole) + '. Your home is at the ' + getLocation(len(getLocationList(playerRole)) - 1, playerRole) + '. You need to get back home.\n')
 
 def printQuestInfo():
-    print('The route back home is: ' + generateRouteString() + '. You are in the ' + getLocation(currentLocationIndex) + ' right now.')
+    print('The route back home is: ' + generateRouteString() + '. You are in the ' + getLocation(currentLocationIndex, playerRole) + ' right now.')
     print('To get to your next location, take', MAX_STEPS, 'steps. You may encounter enemies along the way.\n')
 
 def printInstructions():
@@ -18,7 +25,8 @@ def printInstructions():
     print('You can choose between two roles. The roles have different strengths and weaknesses in HEALTH, SPEED and STRENGTH.')
     print('There are three areas you must travel in (or \'challenges\').')
     print('For each step you take, you roll a die. There is a chance you will encounter an enemy, if your roll is WEAK (1 - 3).')
-    print('Each area has its own enemy. The enemies\' attributes get increasingly stronger as you progress.')
+    print('The areas and enemies you encounter depend on what animal you chose.')
+    print('The enemies\' attributes get increasingly stronger as you progress. Each animal has a specific strength, and together they will test all your attributes.')
     print('The first player to move in battle is decided by whoever has the greatest SPEED attribute.')
     print('There are three moves you can perform during battle: ATTACK, HEAL and RUN.')
     print('Attack damage and the amount healed can either be boosted, hindered, or left unchanged, determined by the strength of a die roll.')
@@ -26,16 +34,30 @@ def printInstructions():
     print('Enemies have a chance to miss their attacks.')
     print('Your health is reset after every battle.\n')
 
-def getLocation(index):
-    return LOCATIONS_LIST[index]
+# GETTER FUNCTIONS
+
+def getLocation(index, role):
+    return getLocationList(role)[index]
+
+def getLocationList(role):
+    if role == 'DOG':
+        return DOG_LOCATIONS_LIST
+    elif role == 'CAT':
+        return CAT_LOCATIONS_LIST
+
+def getEnemiesList(role):
+    if role == 'DOG':
+        return DOG_ENEMIES_LIST
+    elif role == 'CAT':
+        return CAT_ENEMIES_LSIT
 
 def generateRouteString():
     routeString = ''
 
-    for i in LOCATIONS_LIST:
+    for i in getLocationList(playerRole):
         routeString += i
 
-        if i < LOCATIONS_LIST[len(LOCATIONS_LIST) - 1]:
+        if i < getLocationList(playerRole)[len(getLocationList(playerRole)) - 1]:
             routeString += ' -> '
 
     return routeString
@@ -74,6 +96,49 @@ def getRollStrength(roll):
     elif roll > 7:
         return 'STRONG'
 
+def generateHealthPoints(health):
+    OFFSET = 3
+    MULTIPLIER = 5
+
+    return (health + OFFSET) * MULTIPLIER
+
+def getHealIncrement(health):
+    OFFSET = 3
+    MULTIPLIER = 2
+
+    return (health + OFFSET) * MULTIPLIER
+
+def getAttackDamage(strength):
+    OFFSET = 3
+    OFFSET = 2
+
+    return (strength + OFFSET) * OFFSET
+
+def getDiceMoveStrengthOffset(roll):
+    OFFSET = -5
+
+    return roll + OFFSET
+
+def isPlayerFaster():
+    if playerSpeed > enemySpeed:
+        return True
+    
+    return False
+
+def isEnemyDead():
+    if enemyHealthPoints <= 0:
+        return True
+    
+    return False
+
+def isPlayerDead():
+    if playerHealthPoints <= 0:
+        return True
+    
+    return False
+
+# SETTER FUNCTIONS
+
 def assignPlayerRole(role):
     global playerRole, playerHealth, playerSpeed, playerStrength, playerHealthPoints, playerAttackDamage
 
@@ -108,32 +173,23 @@ def assignEnemyRole(role):
         enemyHealth = wolf.HEALTH
         enemySpeed = wolf.SPEED
         enemyStrength = wolf.STRENGTH
+    elif role == 'MOUSE':
+        enemyHealth = mouse.HEALTH
+        enemySpeed = mouse.SPEED
+        enemyStrength = mouse.STRENGTH
+    elif role == 'SPIDER':
+        enemyHealth = spider.HEALTH
+        enemySpeed = spider.SPEED
+        enemyStrength = spider.STRENGTH
+    elif role == 'SCORPION':
+        enemyHealth = scorpion.HEALTH
+        enemySpeed = scorpion.SPEED
+        enemyStrength = scorpion.STRENGTH
 
     enemyHealthPoints = generateHealthPoints(enemyHealth)
     enemyAttackDamage = getAttackDamage(enemyStrength)
 
-def generateHealthPoints(health):
-    OFFSET = 3
-    MULTIPLIER = 5
-
-    return (health + OFFSET) * MULTIPLIER
-
-def getHealIncrement(health):
-    OFFSET = 3
-    MULTIPLIER = 2
-
-    return (health + OFFSET) * MULTIPLIER
-
-def getAttackDamage(strength):
-    OFFSET = 3
-    OFFSET = 2
-
-    return (strength + OFFSET) * OFFSET
-
-def getDiceMoveStrengthOffset(roll):
-    OFFSET = -5
-
-    return roll + OFFSET
+# GAME LOGIC
 
 def takeStep():
     global stepsTaken, currentLocationIndex
@@ -155,9 +211,9 @@ def takeStep():
         stepsTaken = 0
         currentLocationIndex += 1
 
-        print('You have left the ' + getLocation(currentLocationIndex - 1) + ' and entered the ' + getLocation(currentLocationIndex) + '!\n')
+        print('You have left the ' + getLocation(currentLocationIndex - 1, playerRole) + ' and entered the ' + getLocation(currentLocationIndex, playerRole) + '!\n')
 
-        if getLocation(currentLocationIndex) == LOCATIONS_LIST[len(LOCATIONS_LIST) - 1]:
+        if getLocation(currentLocationIndex, playerRole) == getLocationList(playerRole)[len(getLocationList(playerRole)) - 1]:
             onWin()
         else:
             printQuestInfo()
@@ -168,7 +224,7 @@ def onBattle():
     inBattle = True
     print('Your roll is WEAK. You are now in battle.\n')
 
-    currentEnemy = ENEMIES_LIST[currentLocationIndex]
+    currentEnemy = getEnemiesList(playerRole)[currentLocationIndex]
     assignEnemyRole(currentEnemy)
     print('You are fighting a ' + currentEnemy + '!\n')
 
@@ -241,11 +297,14 @@ def playerRun():
     global inBattle, currentEnemy
 
     rollNumber = rollDice()
-
-    if getRollStrength(rollNumber) == 'STRONG':
-        inBattle = False
-        print('You successfully ran away from the ' + currentEnemy + '.\n')
-        return
+    
+    if isPlayerFaster():
+        if getRollStrength(rollNumber) == 'STRONG':
+            inBattle = False
+            print('You successfully ran away from the ' + currentEnemy + '.\n')
+            return
+    else:
+        print(currentEnemy + ' is faster than you.')
 
     print('You cannot run away from the ' + currentEnemy + '.\n')
 
@@ -261,23 +320,7 @@ def enemyAttack():
     else:
         print(currentEnemy + ' tried to attack, but missed!\n')
 
-def isPlayerFaster():
-    if playerSpeed > enemySpeed:
-        return True
-    
-    return False
-
-def isEnemyDead():
-    if enemyHealthPoints <= 0:
-        return True
-    
-    return False
-
-def isPlayerDead():
-    if playerHealthPoints <= 0:
-        return True
-    
-    return False
+# GAME OUTCOMES
 
 def onLose():
     global gameDone
@@ -291,15 +334,21 @@ def onWin():
     gameDone = True
     print('You have arrived at your home! Congratulations!')
 
+# CONSTANTS
+
 DICE_MIN = 1
 DICE_MAX = 10
 
 MAX_STEPS = 10
 
 ROLES_LIST = ['DOG', 'CAT']
-LOCATIONS_LIST = ['FIELD', 'FOREST', 'MOUNTAIN', 'VILLAGE']
-ENEMIES_LIST = ['BEAVER', 'FOX', 'WOLF']
+DOG_LOCATIONS_LIST = ['FIELD', 'FOREST', 'MOUNTAIN', 'VILLAGE']
+CAT_LOCATIONS_LIST = ['MEADOW', 'CAVE', 'DESERT', 'VILLAGE']
+DOG_ENEMIES_LIST = ['BEAVER', 'FOX', 'WOLF']
+CAT_ENEMIES_LSIT = ['MOUSE', 'SPIDER', 'SCORPION']
 BATTLE_MOVES_LIST = ['ATTACK', 'HEAL', 'RUN']
+
+# VARIABLES
 
 currentInput = None
 currentEnemy = None
