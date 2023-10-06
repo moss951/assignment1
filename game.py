@@ -236,9 +236,9 @@ def onBattle(): # battle sequence and loop
     print('You are fighting a ' + currentEnemy + '!\n')
 
     if isPlayerFaster():
-        playerTurn = False
+        playerTurn = False # set to false when the player is faster because the battle loop switches it to the opposite boolean immediately
     else:
-        playerTurn = True
+        playerTurn = True # same here
 
     while (inBattle): # battle turn-based loop
         playerTurn = not playerTurn # alternate between player's turn and enemy's turn
