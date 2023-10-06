@@ -2,6 +2,7 @@
 
 import random
 
+# import enemy information
 import data.dog as dog
 import data.cat as cat
 import data.beaver as beaver
@@ -13,14 +14,14 @@ import data.scorpion as scorpion
 
 # PRINT INFORMATION
 
-def introduceQuest():
+def introduceQuest(): # make a string that describes the quest
     print('You are an animal who is lost in the ' + getLocation(currentLocationIndex, playerRole) + '. Your home is at the ' + getLocation(len(getLocationList(playerRole)) - 1, playerRole) + '. You need to get back home.\n')
 
-def printQuestInfo():
+def printQuestInfo(): # make a string that shows the progress of the game
     print('The route back home is: ' + generateRouteString() + '. You are in the ' + getLocation(currentLocationIndex, playerRole) + ' right now.')
     print('To get to your next location, take', MAX_STEPS, 'steps. You may encounter enemies along the way.\n')
 
-def printInstructions():
+def printInstructions(): # print instructions
     print('INSTRUCTIONS\n')
     print('You can choose between two roles. The roles have different strengths and weaknesses in HEALTH, SPEED and STRENGTH.')
     print('There are three areas you must travel in (or \'challenges\').')
@@ -36,22 +37,22 @@ def printInstructions():
 
 # GETTER FUNCTIONS
 
-def getLocation(index, role):
+def getLocation(index, role): # get a location string given an array index and the player's role
     return getLocationList(role)[index]
 
-def getLocationList(role):
+def getLocationList(role): # get the array that contains the player's role's locations they must go through
     if role == 'DOG':
         return DOG_LOCATIONS_LIST
     elif role == 'CAT':
         return CAT_LOCATIONS_LIST
 
-def getEnemiesList(role):
+def getEnemiesList(role): # get the array that contains the player's role's enemies they must encounter
     if role == 'DOG':
         return DOG_ENEMIES_LIST
     elif role == 'CAT':
         return CAT_ENEMIES_LSIT
 
-def generateRouteString():
+def generateRouteString(): # make a string that displays all the locations the player must go through
     routeString = ''
 
     for i in getLocationList(playerRole):
@@ -62,10 +63,10 @@ def generateRouteString():
 
     return routeString
 
-def getResponse(message, options):
+def getResponse(message, options): # prompt the player with a message given a message string and an array of options
     global currentInput
 
-    while (True):
+    while (True): # loop until the player gives a valid response
         currentInput = input(message)
         if isValidResponse(currentInput, options):
             print('')
@@ -73,14 +74,14 @@ def getResponse(message, options):
     
         print('Invalid response.\n')
 
-def isValidResponse(response, options):
-    for i in options:
+def isValidResponse(response, options): # checks if the player's response is valid, given their response and an array of options
+    for i in options: 
         if response.upper() == i:
             return True
     
-    return False
+    return False 
 
-def rollDice():
+def rollDice(): # prompt the user to roll a die, then rolls the die
     input('Roll Dice (press enter to continue): ')
     rollNumber = random.randrange(DICE_MIN, DICE_MAX + 1)
 
@@ -88,7 +89,7 @@ def rollDice():
     print(getRollStrength(rollNumber) + '\n')
     return rollNumber
 
-def getRollStrength(roll):
+def getRollStrength(roll): # categorizes a roll as either WEAK, AVERAGE or STRONG depending on the number rolled
     if roll < 4:
         return 'WEAK'
     elif roll > 3 and roll < 8:
@@ -96,42 +97,42 @@ def getRollStrength(roll):
     elif roll > 7:
         return 'STRONG'
 
-def generateHealthPoints(health):
-    OFFSET = 3
+def generateHealthPoints(health): # generate the total number of health points for a player or enemy based on their health attribute
+    OFFSET = 3 # the weakest value for an attribute is -2, so this constant will offset the value so it always becomes positive, ready to be used correctly
     MULTIPLIER = 5
 
     return (health + OFFSET) * MULTIPLIER
 
-def getHealIncrement(health):
-    OFFSET = 3
-    MULTIPLIER = 2
+def getHealIncrement(health): # generate the number of health points to be healed by the player, when the HEAL move is used 
+    OFFSET = 3 # the weakest value for an attribute is -2, so this constant will offset the value so it always becomes positive, ready to be used correctly
+    MULTIPLIER = 2 
 
     return (health + OFFSET) * MULTIPLIER
 
-def getAttackDamage(strength):
-    OFFSET = 3
-    OFFSET = 2
+def getAttackDamage(strength): # generate the nummber of damage an attack deals, based on a player or enemy's strength attribute
+    OFFSET = 3 # the weakest value for an attribute is -2, so this constant will offset the value so it always becomes positive, ready to be used correctly
+    MULTIPLIER = 2
 
-    return (strength + OFFSET) * OFFSET
+    return (strength + OFFSET) * MULTIPLIER
 
-def getDiceMoveStrengthOffset(roll):
-    OFFSET = -5
+def getDiceMoveStrengthOffset(roll): # gets the amount gained or lost of a move based on a die roll
+    OFFSET = -5 # the die ranges from 1 to 10. This function will return negative and positive values, which will be added to the value of a move
 
     return roll + OFFSET
 
-def isPlayerFaster():
+def isPlayerFaster(): # checks if the player is faster than the enemy
     if playerSpeed > enemySpeed:
         return True
     
     return False
 
-def isEnemyDead():
+def isEnemyDead(): # checks if the enemy is dead (no more health points)
     if enemyHealthPoints <= 0:
         return True
     
     return False
 
-def isPlayerDead():
+def isPlayerDead(): # checks if the player is dead
     if playerHealthPoints <= 0:
         return True
     
@@ -139,8 +140,8 @@ def isPlayerDead():
 
 # SETTER FUNCTIONS
 
-def assignPlayerRole(role):
-    global playerRole, playerHealth, playerSpeed, playerStrength, playerHealthPoints, playerAttackDamage
+def assignPlayerRole(role): # sets the player's attributes determined by the given role
+    global playerRole, playerHealth, playerSpeed, playerStrength, playerHealthPoints, playerAttackDamage # allow these variables to be set inside this function
 
     playerRole = role
 
@@ -156,8 +157,8 @@ def assignPlayerRole(role):
     playerHealthPoints = generateHealthPoints(playerHealth)
     playerAttackDamage = getAttackDamage(playerStrength)
 
-def assignEnemyRole(role):
-    global enemyRole, enemyHealth, enemySpeed, enemyStrength, enemyHealthPoints, enemyAttackDamage
+def assignEnemyRole(role): # sets the enemy's attributes determined by the given role
+    global enemyRole, enemyHealth, enemySpeed, enemyStrength, enemyHealthPoints, enemyAttackDamage # allow these variables to be set inside this function
 
     enemyRole = role
 
@@ -191,20 +192,20 @@ def assignEnemyRole(role):
 
 # GAME LOGIC
 
-def takeStep():
-    global stepsTaken, currentLocationIndex
+def takeStep(): # logic for the player to take a step
+    global stepsTaken, currentLocationIndex # allow these variables to be edited inside this function
 
     print('You have taken', stepsTaken, '/', MAX_STEPS, 'steps.\n')
 
     rollNumber = rollDice()
 
     if getRollStrength(rollNumber) == 'WEAK':
-        onBattle()
+        onBattle() # start battle sequence
 
-        if gameDone:
+        if gameDone: # checks if the game is finished, either by a win or loss
             return
 
-    stepsTaken += 1
+    stepsTaken += 1 
     print('You took a step safely.\n')
 
     if stepsTaken == MAX_STEPS:
@@ -213,18 +214,18 @@ def takeStep():
 
         print('You have left the ' + getLocation(currentLocationIndex - 1, playerRole) + ' and entered the ' + getLocation(currentLocationIndex, playerRole) + '!\n')
 
-        if getLocation(currentLocationIndex, playerRole) == getLocationList(playerRole)[len(getLocationList(playerRole)) - 1]:
+        if getLocation(currentLocationIndex, playerRole) == getLocationList(playerRole)[len(getLocationList(playerRole)) - 1]: # checks if the player is at the last location
             onWin()
         else:
-            printQuestInfo()
+            printQuestInfo() # new area quest info
 
-def onBattle():
-    global currentEnemy, inBattle, playerTurn, playerHealthPoints
+def onBattle(): # battle sequence and loop
+    global currentEnemy, inBattle, playerTurn, playerHealthPoints # allow these variables to be changed inside this function
 
     inBattle = True
     print('Your roll is WEAK. You are now in battle.\n')
 
-    currentEnemy = getEnemiesList(playerRole)[currentLocationIndex]
+    currentEnemy = getEnemiesList(playerRole)[currentLocationIndex] # get the enemy for the specified area and player role
     assignEnemyRole(currentEnemy)
     print('You are fighting a ' + currentEnemy + '!\n')
 
@@ -233,8 +234,8 @@ def onBattle():
     else:
         playerTurn = True
 
-    while (inBattle):
-        playerTurn = not playerTurn
+    while (inBattle): # battle turn-based loop
+        playerTurn = not playerTurn # alternate between player's turn and enemy's turn
 
         print('Player health:', playerHealthPoints)
         print('Enemy health:', enemyHealthPoints, '\n')
@@ -250,10 +251,10 @@ def onBattle():
         if isPlayerDead():
             onLose()
 
-    playerHealthPoints = generateHealthPoints(playerHealth)
+    playerHealthPoints = generateHealthPoints(playerHealth) # reset health points after battle is over
     print('You are no longer in battle.\n')
 
-def makeBattleMove(move):
+def makeBattleMove(move): # run battle move functions depending on the player's response
     if move == 'ATTACK':
         playerAttack()
     elif move == 'HEAL':
@@ -261,21 +262,21 @@ def makeBattleMove(move):
     elif move == 'RUN':
         playerRun()
 
-def playerAttack():
-    global enemyHealthPoints, currentEnemy
+def playerAttack(): # deal damage to the enemy
+    global enemyHealthPoints, currentEnemy # allow these variables to be changed inside of this function
     
     rollNumber = rollDice()
 
-    offsetAttackDamage = playerAttackDamage + getDiceMoveStrengthOffset(rollNumber)
+    offsetAttackDamage = playerAttackDamage + getDiceMoveStrengthOffset(rollNumber) # change the default attack damage by the dice offset
 
-    if offsetAttackDamage <= 0:
+    if offsetAttackDamage <= 0: # there may be some cases where the dice offsets too much and it becomes a negative number, so this makes these cases deal 1 damage instead
         offsetAttackDamage = 1
 
     enemyHealthPoints -= offsetAttackDamage
     print(currentEnemy + ' has lost', offsetAttackDamage, 'health points.\n')
 
-def playerHeal():
-    global playerHealthPoints
+def playerHeal(): # add a certain amount to the player's health points
+    global playerHealthPoints # allow this variable to be changed inside this function
 
     rollNumber = rollDice()
 
