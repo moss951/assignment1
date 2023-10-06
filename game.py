@@ -269,7 +269,11 @@ def playerAttack(): # deal damage to the enemy
 
     offsetAttackDamage = playerAttackDamage + getDiceMoveStrengthOffset(rollNumber) # change the default attack damage by the dice offset
 
+<<<<<<< HEAD
     if offsetAttackDamage <= 0: # there may be some cases where the die offsets too much and it becomes a negative number, so this makes these cases deal 1 damage instead
+=======
+    if offsetAttackDamage <= 0: # there may be some cases where the dice offsets too much and it becomes a negative number, so this makes these cases deal 1 damage instead
+>>>>>>> 557db28f5f1b2ef6cfa2f1dd65727c92023a206d
         offsetAttackDamage = 1
 
     enemyHealthPoints -= offsetAttackDamage

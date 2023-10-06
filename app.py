@@ -1,7 +1,7 @@
 import game as game
 
 game.printInstructions()
-game.assignPlayerRole(game.getResponse('Select animal (DOG/CAT): ', game.ROLES_LIST)) # player chooses a role
+game.assignPlayerRole(game.getResponse('Select animal (DOG/CAT): ', game.ROLES_LIST))
 game.introduceQuest()
 game.printQuestInfo()
 
