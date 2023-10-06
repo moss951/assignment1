@@ -102,24 +102,21 @@ def getRollStrength(roll): # categorizes a roll as either WEAK, AVERAGE or STRON
         return 'AVERAGE'
     elif roll > 7:
         return 'STRONG'
+    
+def getMoveStrength(attribute, multiplier): # generate the strength a move deals, based on an attribute and a multiplier given
+    OFFSET = 3 # the weakest value for an attribute is -2, so this constant will offset the value so it always becomes positive, ready to be used correctly
+    MULTIPLIER = multiplier
+
+    return (attribute + OFFSET) * MULTIPLIER
 
 def generateHealthPoints(health): # generate the total number of health points for a player or enemy based on their health attribute
-    OFFSET = 3 # the weakest value for an attribute is -2, so this constant will offset the value so it always becomes positive, ready to be used correctly
-    MULTIPLIER = 5
-
-    return (health + OFFSET) * MULTIPLIER
+    getMoveStrength(health, 5)
 
 def getHealIncrement(health): # generate the number of health points to be healed by the player, when the HEAL move is used 
-    OFFSET = 3 # the weakest value for an attribute is -2, so this constant will offset the value so it always becomes positive, ready to be used correctly
-    MULTIPLIER = 2 
-
-    return (health + OFFSET) * MULTIPLIER
+    getMoveStrength(health, 2)
 
 def getAttackDamage(strength): # generate the nummber of damage an attack deals, based on a player or enemy's strength attribute
-    OFFSET = 3 # the weakest value for an attribute is -2, so this constant will offset the value so it always becomes positive, ready to be used correctly
-    MULTIPLIER = 2
-
-    return (strength + OFFSET) * MULTIPLIER
+    getMoveStrength(strength, 2)
 
 def getDiceMoveStrengthOffset(roll): # gets the amount gained or lost of a move based on a die roll
     OFFSET = -5 # the die ranges from 1 to 10. This function will return negative and positive values, which will be added to the value of a move
