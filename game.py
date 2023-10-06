@@ -1,3 +1,9 @@
+'''
+
+This file contains story information to be printed, game logic and structure, as well as data for locations, the player, and the current enemy. 
+
+'''
+
 # IMPORTS
 
 import random

@@ -1,3 +1,10 @@
+'''
+
+This file is what the user runs to play the game.
+It sets up the player and runs the game loop.
+
+'''
+
 import game as game
 
 game.printInstructions()
