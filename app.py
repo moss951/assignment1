@@ -1,12 +1,12 @@
 import game as game
 
 game.printInstructions()
+game.assignPlayerRole(game.getResponse('Select animal (DOG/CAT): ', game.ROLES_LIST)) # player chooses a role
 game.introduceQuest()
-game.assignPlayerRole(game.getResponse('Select animal (DOG/CAT): ', game.ROLES_LIST))
 game.printQuestInfo()
 
-while (not game.gameDone):
+while (not game.gameDone): # GAME LOOP
     game.takeStep()
 
-input('Press enter to quit: ')
+input('Press enter to quit: ') # runs after the game has either been won or lost
 quit()
