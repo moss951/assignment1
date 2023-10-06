@@ -21,7 +21,7 @@ import data.scorpion as scorpion
 # PRINT INFORMATION
 
 def introduceQuest(): # make a string that describes the quest
-    print('You are an animal who is lost in the ' + getLocation(currentLocationIndex, playerRole) + '. Your home is at the ' + getLocation(len(getLocationList(playerRole)) - 1, playerRole) + '. You need to get back home.\n')
+    print('You are a ' + playerRole + ' who is lost in the ' + getLocation(currentLocationIndex, playerRole) + '. Your home is at the ' + getLocation(len(getLocationList(playerRole)) - 1, playerRole) + '. You need to get back home.\n')
 
 def printQuestInfo(): # make a string that shows the progress of the game
     print('The route back home is: ' + generateRouteString() + '. You are in the ' + getLocation(currentLocationIndex, playerRole) + ' right now.')
@@ -37,7 +37,7 @@ def printInstructions(): # print instructions
     print('The first player to move in battle is decided by whoever has the greatest SPEED attribute.')
     print('There are three moves you can perform during battle: ATTACK, HEAL and RUN.')
     print('Attack damage and the amount healed can either be boosted, hindered, or left unchanged, determined by the strength of a die roll.')
-    print('Running away will only succeed if your die roll is STRONG (8 - 10).')
+    print('Running away will only succeed if you are faster than the enemy and your die roll is STRONG (8 - 10).')
     print('Enemies have a chance to miss their attacks.')
     print('Your health is reset after every battle.\n')
 
